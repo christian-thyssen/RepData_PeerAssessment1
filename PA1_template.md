@@ -30,7 +30,7 @@ steps.per.day %>%
     geom_histogram(binwidth = 1000, boundary = 0)
 ```
 
-![plot of chunk unnamed-chunk-39](figure/unnamed-chunk-39-1.png)
+![plot of chunk chunk-2](figure/chunk-2-1.png)
 
 ```r
 summary(steps.per.day$steps)
@@ -55,7 +55,7 @@ steps.per.interval %>%
     geom_line()
 ```
 
-![plot of chunk unnamed-chunk-40](figure/unnamed-chunk-40-1.png)
+![plot of chunk chunk-3](figure/chunk-3-1.png)
 
 ```r
 max.interval <- (steps.per.interval %>% filter(steps == max(steps)))$interval
@@ -88,7 +88,7 @@ steps.per.day.imputed %>%
     geom_histogram(binwidth = 1000, boundary = 0)
 ```
 
-![plot of chunk unnamed-chunk-42](figure/unnamed-chunk-42-1.png)
+![plot of chunk chunk-5](figure/chunk-5-1.png)
 
 ```r
 summary(steps.per.day.imputed$steps)
@@ -106,28 +106,21 @@ We see that the mean and the median are higher than before.
 
 
 ```r
-weekend.or.weekday <- function(dates) {
-    if_else(as.POSIXlt(dates)$wday %in% c(0, 6), "weekend", "weekday")
+determine.day.type <- function(date) {
+    if_else(as.POSIXlt(date)$wday %in% c(0, 6), "weekend", "weekday")
 }
 steps.imputed <- steps.imputed %>%
-    mutate(type = as.factor(weekend.or.weekday(steps.imputed$date)))
+    mutate(type = as.factor(determine.day.type(date)))
 steps.by.interval.and.type.imputed <- steps.imputed %>%
     group_by(interval, type) %>%
-    summarise(steps = mean(steps))
-```
-
-```
-## `summarise()` has grouped output by 'interval'. You can override using the `.groups` argument.
-```
-
-```r
+    summarise(steps = mean(steps), .groups = "drop_last")
 steps.by.interval.and.type.imputed %>%
     ggplot(aes(x = interval, y = steps)) +
     geom_line() +
     facet_grid(vars(type))
 ```
 
-![plot of chunk unnamed-chunk-43](figure/unnamed-chunk-43-1.png)
+![plot of chunk chunk-6](figure/chunk-6-1.png)
 
 On weekdays there are more steps in the morning.
 On weekends there are more steps in the afternoon.
